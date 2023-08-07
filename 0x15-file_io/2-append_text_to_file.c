@@ -1,50 +1,38 @@
-#include "holberton.h"
-
+#include "main.h"
 /**
- * _strlen - compute the length of a NULL-terminated string
- * @str: the string to measure
+ * append_text_to_file - function that appends text at the end of a file
  *
- * Return: the length of str, or -1 if str is NULL
- */
-ssize_t _strlen(const char *str)
-{
-	ssize_t len = 0;
-
-	if (!str)
-		return (-1);
-
-	while (*str++)
-		++len;
-
-	return (len);
-}
-
-/**
- * append_text_to_file - append text to the end of a file
- * @filename: the name of the file to append to
- * @text_content: the data to append to filename
+ * @filename: name of the file
+ * @text_content: NULL terminated string to append to end of file
  *
- * Return: Upon success, return 1. Otherwise, return -1.
+ * Return: Returns: 1 on success, -1 on failure
+ * Do not create the file if it does not exit
+ *
+ * if filename is NULL return -1
+ * If text_content is NULL, do not add anything to the file.
+ * Return 1 if the file exists and -1 if the file does not exist or if you
+ * do not have the required permissions to write the file
  */
 int append_text_to_file(const char *filename, char *text_content)
 {
-	ssize_t b_written = 0;
-	int fd;
+	int fd, n_print, len = 0;
 
-	if (!filename)
+	if (filename == 0)
 		return (-1);
 
 	fd = open(filename, O_WRONLY | O_APPEND);
 
-	if (fd < 0)
+	if (fd == -1)
 		return (-1);
 
 	if (text_content)
-		b_written = write(fd, text_content, _strlen(text_content));
-
+	{
+		while (text_content[len])
+			len++;
+		n_print = write(fd, text_content, len);
+		if (n_print == -1)
+			return (-1);
+	}
 	close(fd);
-
-	if (b_written < 0)
-		return (-1);
 	return (1);
 }
